@@ -25,8 +25,9 @@ db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function callback () {
     console.log("mongo db connection OK.");
 });
-
 mongoose.connect('mongodb://neep:NeepWhat!@localhost:27017/neep?authSource=admin');
+
 // DEFINE MODEL
 //var Room = require('./model/room');
 //var router = require('./routes')(app, Room);
+

@@ -56,6 +56,7 @@ module.exports = function(app, Room, RoomCheck, Food)
         });
     });
     
+    
     // 호불호 받기 update
     app.put('/goodbad', function(req,res){
         // good
@@ -83,33 +84,20 @@ module.exports = function(app, Room, RoomCheck, Food)
             }        
        });
       
-       // flag=1의 count == roomchecks에 있는 count 값이면..
-        var query =  getRoomID(req.body.deviceNum);
-        query.exec(function(err,room){
-           if(err) return console.log(err);   
-           room.roomID;
-        });
-        //checkFlag(req.body.deviceNum, temp1);
-        console.log("query: "+one);
-
-       // 10개 리스트 생성 api 호출
+         
         
+       // 10개 리스트 생성 api 호출
+        var a = [{"name":"달걀볶음밥1"},{"name":"달걀볶음밥2"},{"name":"달걀볶음밥3"},{"name":"달걀볶음밥4"},{"name":"달걀볶음밥5"},{"name":"달걀볶음밥6"},{"name":"달걀볶음밥7"},{"name":"달걀볶음밥8"},{"name":"달걀볶음밥9"},{"name":"달걀볶음밥0"}]
+        res.json(a);
    });
     // flag 체크
     // 디바이스가 속한 roomID 찾아서 해당 room의 flag 모두 검사
-    
-    function getRoomID(device){
-       var query = Room.find({"deviceNum":device});
-        console.log(query);
-       return query;
-        
-    }
 
-   
 
     
 
     
    // 10개 리스트 생성    
 }
+
 
