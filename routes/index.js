@@ -1,5 +1,3 @@
-// api
-
 const fs = require('fs');
 module.exports = function(app, Room, RoomCheck, Food, Emotion)
 {
@@ -12,13 +10,14 @@ module.exports = function(app, Room, RoomCheck, Food, Emotion)
        })
     });
 
+
 /**
  * @swagger
  * tags:
- *   name: RoomID
+ *   name: [EatTogether]
  *   description: roomID 중복 체크 후 입장코드 생성
  * definitions:
- *   room_request:
+ *   request:
  *     type: object
  *     required:
  *       - count
@@ -26,7 +25,7 @@ module.exports = function(app, Room, RoomCheck, Food, Emotion)
  *       count:
  *         type: Number
  *         description: 인원수
- *   room_response:
+ *   response:
  *     type: object
  *     required:
  *       - status
@@ -57,7 +56,7 @@ module.exports = function(app, Room, RoomCheck, Food, Emotion)
  *    /checkroomid:
  *      post:
  *        tags:
- *        - "RoomID"
+ *        - [EatTogether]
  *        summary: "create roomid process"
  *        description: ""
  *        consumes:
@@ -70,12 +69,12 @@ module.exports = function(app, Room, RoomCheck, Food, Emotion)
  *          description: "roomID 중복 체크 후 입장코드 생성"
  *          required: true
  *          schema:
- *            $ref: "#/definitions/room_request"
+ *            $ref: "#/definitions/request"
  *        responses:
  *          200:
  *            description: "입장코드 생성 결과"
  *            schema:
- *              $ref: "#/definitions/room_response"
+ *              $ref: "#/definitions/response"
  *          400:
  *            description: "잘못된 데이터"
  *            schema:
@@ -84,7 +83,7 @@ module.exports = function(app, Room, RoomCheck, Food, Emotion)
  *            description: "입장코드 생성 오류 & 실패"
  *            schema:
  *              $ref: "#/definitions/Response_error"
- */    
+ */
     // room 처음 만들 때 roomID 중복 check
     app.post('/checkroomid', function (req,res) {
         var roomcheck = new RoomCheck();
@@ -117,6 +116,80 @@ module.exports = function(app, Room, RoomCheck, Food, Emotion)
     });
 
 
+/**
+ * @swagger
+ * tags:
+ *   name: [EatTogether]
+ *   description: roomID 중복 체크 후 입장코드 생성
+ * definitions:
+ *   request:
+ *     type: object
+ *     required:
+ *       - count
+ *     properties:
+ *       count:
+ *         type: Number
+ *         description: 인원수
+ *   response:
+ *     type: object
+ *     required:
+ *       - status
+ *       - roomID
+ *     properties:
+ *       status:
+ *         type: string
+ *         description: 입장코드 성공 여부- error, success
+ *       roomID:
+ *         type: string
+ *         description: 입장코드
+ *   Response_error:
+ *     type: object
+ *     required:
+ *       - status
+ *     properties:
+ *       message:
+ *         type: string
+ *         description: 오류 사유
+ *       status:
+ *         type: integer
+ *         description: response code
+ */
+
+/**
+ * @swagger
+ *  paths:
+ *    /savedevice:
+ *      post:
+ *        tags:
+ *        - [EatTogether]
+ *        summary: "create roomid process"
+ *        description: ""
+ *        consumes:
+ *        - "application/json"
+ *        produces:
+ *        - "application/json"
+ *        parameters:
+ *        - in: "body"
+ *          name: count
+ *          description: "roomID 중복 체크 후 입장코드 생성"
+ *          required: true
+ *          schema:
+ *            $ref: "#/definitions/request"
+ *        responses:
+ *          200:
+ *            description: "입장코드 생성 결과"
+ *            schema:
+ *              $ref: "#/definitions/response"
+ *          400:
+ *            description: "잘못된 데이터"
+ *            schema:
+ *              $ref: "#/definitions/Response_error"
+ *          500:
+ *            description: "입장코드 생성 오류 & 실패"
+ *            schema:
+ *              $ref: "#/definitions/Response_error"
+ */
+
     // roomID 생성 후 다른 사람들이 들어올 때..
     // roomID, deviceNum 같이 저장
     app.post('/savedevice', function (req,res){
@@ -133,8 +206,7 @@ module.exports = function(app, Room, RoomCheck, Food, Emotion)
         });
     });
 
-    
-    
+
     // 호불호 받기 update
     app.put('/checkpref', function(req,res){
         // good
@@ -151,7 +223,7 @@ module.exports = function(app, Room, RoomCheck, Food, Emotion)
             else if(!rooms) return res.status(404).json({ error: 'room not found' });
             else{
                 console.log({message: 'bad updated'});
-            }        
+            }
        });
         // flag=1
        Room.updateOne({deviceNum: req.body.deviceNum}, {flag:"1"},function(err, rooms){
@@ -159,11 +231,11 @@ module.exports = function(app, Room, RoomCheck, Food, Emotion)
             else if(!rooms) return res.status(404).json({ error: 'room not found' });
             else{
                 console.log({message: 'flag updated'});
-            }        
+            }
        });
-      
-         
-        
+
+
+
        // 10개 리스트 생성 api 호출
         var a = [{"name":"달걀볶음밥1"},{"name":"달걀볶음밥2"},{"name":"달걀볶음밥3"},{"name":"달걀볶음밥4"},{"name":"달걀볶음밥5"},{"name":"달걀볶음밥6"},{"name":"달걀볶음밥7"},{"name":"달걀볶음밥8"},{"name":"달걀볶음밥9"},{"name":"달걀볶음밥0"}]
         res.json(a);
@@ -179,7 +251,7 @@ module.exports = function(app, Room, RoomCheck, Food, Emotion)
             console.log(err);
         });
     });
-    
+
     const {emotion} = require('../emotion/index');
 
     app.get('/predict', function(req, res){
@@ -187,10 +259,9 @@ module.exports = function(app, Room, RoomCheck, Food, Emotion)
         emotion();
         console.log("실행?");
     });
-    
-    
-   // 10개 리스트 생성    
-}
 
+
+   // 10개 리스트 생성
+}
 
 
