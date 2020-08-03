@@ -15,6 +15,11 @@
     "express": "^4.17.1",
     "mongoose": "^5.9.26",
     "nodemon": "^1.19.2",
+    "python-shell": "^2.0.1",
     "socket.io": "^2.2.0"
+  },
+  "devDependencies": {
+    "swagger-jsdoc": "^4.0.0",
+    "swagger-ui-express": "^4.1.4"
   }
 }

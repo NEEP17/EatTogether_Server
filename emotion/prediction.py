@@ -5,7 +5,7 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras.models import model_from_json
 import sys
 
-model = keras.models.load_model('C:\\neep\\model.h5')
+model = keras.models.load_model('./model.h5')
 
 def loadImage(filepath):
     test_img = image.load_img(filepath, target_size=(224, 224))

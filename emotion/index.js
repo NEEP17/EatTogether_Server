@@ -1,16 +1,21 @@
-const { PythonShell } = require("python-shell");
-//let img_path = "C:\\neep\\picture2.jpg"
+module.exports.emotion = function(){
+	const { PythonShell } = require("python-shell");
+	//let img_path = "C:\\neep\\picture2.jpg"
 
-let 
-let options = {
-    mode: 'text',
-    pythonPath: "C:\\Users\\DS\\anaconda3\\envs\\emotion\\python.exe",
-    scriptPath: "",
-    pythonOptions: ['-u'],
-    args: [image_data]
-};
+	//let image_data = ""; // 이미지 
 
-PythonShell.run('emotion_test.py', options, function(err, data) {
-    if (err) throw err;
-    console.log('prediction: %s', data);
+	let image_data = "./aa.jpg"
+
+	let options = {
+	    mode: 'text',
+   	 pythonPath: "/usr/bin/python3",
+   	 scriptPath: "./emotion",
+   	 pythonOptions: ['-u'],
+   	 args: [image_data]
+	};
+
+	PythonShell.run('prediction.py', options, function(err, data) {
+    	if (err) throw err;
+   	 console.log('prediction: %s', data);
 });
+}

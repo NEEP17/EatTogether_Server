@@ -1,4 +1,7 @@
-module.exports = function(app, Room, RoomCheck, Food)
+// api
+
+const fs = require('fs');
+module.exports = function(app, Room, RoomCheck, Food, Emotion)
 {
     // 모든 방 데이터 불러오기
     app.get('/room', function(req,res){
@@ -9,8 +12,81 @@ module.exports = function(app, Room, RoomCheck, Food)
        })
     });
 
+/**
+ * @swagger
+ * tags:
+ *   name: RoomID
+ *   description: roomID 중복 체크 후 입장코드 생성
+ * definitions:
+ *   room_request:
+ *     type: object
+ *     required:
+ *       - count
+ *     properties:
+ *       count:
+ *         type: Number
+ *         description: 인원수
+ *   room_response:
+ *     type: object
+ *     required:
+ *       - status
+ *       - roomID
+ *     properties:
+ *       status:
+ *         type: string
+ *         description: 입장코드 성공 여부- error, success
+ *       roomID:
+ *         type: string
+ *         description: 입장코드
+ *   Response_error:
+ *     type: object
+ *     required:
+ *       - status
+ *     properties:
+ *       message:
+ *         type: string
+ *         description: 오류 사유
+ *       status:
+ *         type: integer
+ *         description: response code
+ */
+
+/**
+ * @swagger
+ *  paths:
+ *    /checkroomid:
+ *      post:
+ *        tags:
+ *        - "RoomID"
+ *        summary: "create roomid process"
+ *        description: ""
+ *        consumes:
+ *        - "application/json"
+ *        produces:
+ *        - "application/json"
+ *        parameters:
+ *        - in: "body"
+ *          name: count
+ *          description: "roomID 중복 체크 후 입장코드 생성"
+ *          required: true
+ *          schema:
+ *            $ref: "#/definitions/room_request"
+ *        responses:
+ *          200:
+ *            description: "입장코드 생성 결과"
+ *            schema:
+ *              $ref: "#/definitions/room_response"
+ *          400:
+ *            description: "잘못된 데이터"
+ *            schema:
+ *              $ref: "#/definitions/Response_error"
+ *          500:
+ *            description: "입장코드 생성 오류 & 실패"
+ *            schema:
+ *              $ref: "#/definitions/Response_error"
+ */    
     // room 처음 만들 때 roomID 중복 check
-    app.post('/checkprac', function(req,res) {
+    app.post('/checkroomid', function (req,res) {
         var roomcheck = new RoomCheck();
         roomcheck.count = req.body.count;
 
@@ -40,9 +116,10 @@ module.exports = function(app, Room, RoomCheck, Food)
 
     });
 
+
     // roomID 생성 후 다른 사람들이 들어올 때..
     // roomID, deviceNum 같이 저장
-    app.post('/saveDevice', function(req,res){
+    app.post('/savedevice', function (req,res){
        var room = new Room();
        room.roomID = req.body.roomID;
        room.deviceNum = req.body.deviceNum;
@@ -55,10 +132,11 @@ module.exports = function(app, Room, RoomCheck, Food)
                 console.log("roomID: "+room.roomID+", deviceNum: ",room.deviceNum);
         });
     });
+
     
     
     // 호불호 받기 update
-    app.put('/goodbad', function(req,res){
+    app.put('/checkpref', function(req,res){
         // good
         Room.updateOne({deviceNum: req.body.deviceNum}, {good:req.body.good},function(err, rooms){
             if(err) return res.status(500).json({ error: 'database failure' });
@@ -94,10 +172,25 @@ module.exports = function(app, Room, RoomCheck, Food)
     // 디바이스가 속한 roomID 찾아서 해당 room의 flag 모두 검사
 
 
+    app.post('/saveImage', function(req,res){
+        var img = req.body.img;
+        var buffer = new Buffer.from(img.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
+        fs.writeFileSync('/home/ec2-user/app/what/What_Server/emotion/aa.jpg', buffer, function(err){
+            console.log(err);
+        });
+    });
     
+    const {emotion} = require('../emotion/index');
 
+    app.get('/predict', function(req, res){
+
+        emotion();
+        console.log("실행?");
+    });
+    
     
    // 10개 리스트 생성    
 }
+
 
 
