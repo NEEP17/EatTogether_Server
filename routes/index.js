@@ -13,11 +13,12 @@ module.exports = function(app, Room, RoomCheck, Food, Emotion)
 
 /**
  * @swagger
+ * /checkroomid:
  * tags:
- *   name: [EatTogether]
+ *   name: EatTogether
  *   description: roomID 중복 체크 후 입장코드 생성
  * definitions:
- *   request:
+ *   room_request:
  *     type: object
  *     required:
  *       - count
@@ -25,7 +26,7 @@ module.exports = function(app, Room, RoomCheck, Food, Emotion)
  *       count:
  *         type: Number
  *         description: 인원수
- *   response:
+ *   room_response:
  *     type: object
  *     required:
  *       - status
@@ -37,7 +38,7 @@ module.exports = function(app, Room, RoomCheck, Food, Emotion)
  *       roomID:
  *         type: string
  *         description: 입장코드
- *   Response_error:
+ *   room_Response_error:
  *     type: object
  *     required:
  *       - status
@@ -69,20 +70,20 @@ module.exports = function(app, Room, RoomCheck, Food, Emotion)
  *          description: "roomID 중복 체크 후 입장코드 생성"
  *          required: true
  *          schema:
- *            $ref: "#/definitions/request"
+ *            $ref: "#/definitions/room_request"
  *        responses:
  *          200:
  *            description: "입장코드 생성 결과"
  *            schema:
- *              $ref: "#/definitions/response"
+ *              $ref: "#/definitions/room_response"
  *          400:
  *            description: "잘못된 데이터"
  *            schema:
- *              $ref: "#/definitions/Response_error"
+ *              $ref: "#/definitions/room_Response_error"
  *          500:
  *            description: "입장코드 생성 오류 & 실패"
  *            schema:
- *              $ref: "#/definitions/Response_error"
+ *              $ref: "#/definitions/room_Response_error"
  */
     // room 처음 만들 때 roomID 중복 check
     app.post('/checkroomid', function (req,res) {
@@ -118,31 +119,36 @@ module.exports = function(app, Room, RoomCheck, Food, Emotion)
 
 /**
  * @swagger
+ * /savedevice:
  * tags:
- *   name: [EatTogether]
- *   description: roomID 중복 체크 후 입장코드 생성
+ *   name: EatTogether
+ *   description: roomID, deviceNum 저장
  * definitions:
- *   request:
+ *   device1_request:
  *     type: object
  *     required:
- *       - count
+ *       - roomID
  *     properties:
- *       count:
- *         type: Number
- *         description: 인원수
- *   response:
+ *       roomID:
+ *         type: String
+ *         description: 입장코드
+ *   device2_request:
+ *     type: object
+ *     required:
+ *       - deviceNum
+ *     properties:
+ *       deviceNum:
+ *         type: String
+ *         description: 디바이스 번호
+ *   device_response:
  *     type: object
  *     required:
  *       - status
- *       - roomID
  *     properties:
  *       status:
  *         type: string
- *         description: 입장코드 성공 여부- error, success
- *       roomID:
- *         type: string
- *         description: 입장코드
- *   Response_error:
+ *         description: 저장 성공 여부- error, success
+ *   device_Response_error:
  *     type: object
  *     required:
  *       - status
@@ -162,7 +168,7 @@ module.exports = function(app, Room, RoomCheck, Food, Emotion)
  *      post:
  *        tags:
  *        - [EatTogether]
- *        summary: "create roomid process"
+ *        summary: "save deviceNum and roomID process"
  *        description: ""
  *        consumes:
  *        - "application/json"
@@ -170,24 +176,31 @@ module.exports = function(app, Room, RoomCheck, Food, Emotion)
  *        - "application/json"
  *        parameters:
  *        - in: "body"
- *          name: count
- *          description: "roomID 중복 체크 후 입장코드 생성"
+ *          name: roomID
+ *          description: "roomID 체크 "
  *          required: true
  *          schema:
- *            $ref: "#/definitions/request"
+ *            $ref: "#/definitions/device1_request"
+ * 
+ *        - in: "body"
+ *          name: deviceNum
+ *          description: "디바이스 번호 저장"
+ *          required: true
+ *          schema:
+ *            $ref: "#/definitions/device2_request"
  *        responses:
  *          200:
- *            description: "입장코드 생성 결과"
+ *            description: "저장 성공"
  *            schema:
- *              $ref: "#/definitions/response"
+ *              $ref: "#/definitions/device_response"
  *          400:
  *            description: "잘못된 데이터"
  *            schema:
- *              $ref: "#/definitions/Response_error"
+ *              $ref: "#/definitions/device_Response_error"
  *          500:
- *            description: "입장코드 생성 오류 & 실패"
+ *            description: "저장 오류 & 실패"
  *            schema:
- *              $ref: "#/definitions/Response_error"
+ *              $ref: "#/definitions/device_Response_error"
  */
 
     // roomID 생성 후 다른 사람들이 들어올 때..
