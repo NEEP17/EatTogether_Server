@@ -85,9 +85,11 @@ module.exports = function(app, Room, RoomCheck, Food, Emotion)
  *            schema:
  *              $ref: "#/definitions/room_Response_error"
  */
-    // room 처음 만들 때 roomID 중복 check
+    // roomID 중복 체킹 후 방 입장하기
     app.post('/checkroomid', function (req,res) {
         var roomcheck = new RoomCheck();
+        // count 예외처리하기
+        // count 값 없을 때. 1~10명 까지만.
         roomcheck.count = req.body.count;
 
         var temp = Math.floor(Math.random() * 1000000);
@@ -219,9 +221,26 @@ module.exports = function(app, Room, RoomCheck, Food, Emotion)
         });
     });
 
+    async function f1(){
+        try{
+            var roomID = "685360";
+            // flag count
+            var flag_count = await Room.find({roomID: roomID, flag:1});    
+            // roomID 설정인원(count)
+            var room_count = await RoomCheck.findOne({roomID: roomID});  
+            console.log("flag_count: "+ flag_count);
+            console.log("room_count: "+room_count);
+            console.log("aa: " +room_count.count);
+            return room_count.count;
+        } catch(error) {
+            console.log(error);
+        }
+
+    }
+    
 
     // 호불호 받기 update
-    app.put('/checkpref', function(req,res){
+    app.put('/checkpref', async function(req,res){
         // good
         Room.updateOne({deviceNum: req.body.deviceNum}, {good:req.body.good},function(err, rooms){
             if(err) return res.status(500).json({ error: 'database failure' });
@@ -239,7 +258,7 @@ module.exports = function(app, Room, RoomCheck, Food, Emotion)
             }
        });
         // flag=1
-       Room.updateOne({deviceNum: req.body.deviceNum}, {flag:"1"},function(err, rooms){
+       Room.updateOne({deviceNum: req.body.deviceNum}, {flag:true},function(err, rooms){
             if(err) return res.status(500).json({ error: 'database failure' });
             else if(!rooms) return res.status(404).json({ error: 'room not found' });
             else{
@@ -247,11 +266,7 @@ module.exports = function(app, Room, RoomCheck, Food, Emotion)
             }
        });
 
-
-
-       // 10개 리스트 생성 api 호출
-        var a = [{"name":"달걀볶음밥1"},{"name":"달걀볶음밥2"},{"name":"달걀볶음밥3"},{"name":"달걀볶음밥4"},{"name":"달걀볶음밥5"},{"name":"달걀볶음밥6"},{"name":"달걀볶음밥7"},{"name":"달걀볶음밥8"},{"name":"달걀볶음밥9"},{"name":"달걀볶음밥0"}]
-        res.json(a);
+        console.log("return count"+await f1());
    });
     // flag 체크
     // 디바이스가 속한 roomID 찾아서 해당 room의 flag 모두 검사
@@ -260,7 +275,7 @@ module.exports = function(app, Room, RoomCheck, Food, Emotion)
     app.post('/saveImage', function(req,res){
         var img = req.body.img;
         var buffer = new Buffer.from(img.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
-        fs.writeFileSync('/home/ec2-user/app/what/What_Server/emotion/aa.jpg', buffer, function(err){
+        fs.writeFileSync('/home/ec2-user/app/what/What_Server/emotion/ab.jpg', buffer, function(err){
             console.log(err);
         });
     });
@@ -272,6 +287,9 @@ module.exports = function(app, Room, RoomCheck, Food, Emotion)
         emotion();
         console.log("실행?");
     });
+    
+
+   
 
 
    // 10개 리스트 생성

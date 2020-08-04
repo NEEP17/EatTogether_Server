@@ -7,7 +7,7 @@ var roomSchema = new Schema({
     good:String, 
     bad:String,
     pred: [Number],
-    flag: String
+    flag: Boolean
 });
 
 module.exports = mongoose.model('room', roomSchema);
