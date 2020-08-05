@@ -281,11 +281,35 @@ module.exports = function(app, Room, RoomCheck, Food, Emotion)
     });
 
     const {emotion} = require('../emotion/index');
+    
+    app.get('/predict', async function(req, res){
+        /*
+        const { PythonShell } = require("python-shell");
+        
+        var image_data = "/home/ec2-user/app/what/What_Server/emotion/picture1.JPG";
+        
+        var pyshell = new PythonShell("/home/ec2-user/app/what/What_Server/emotion/prediction.py",  {mode: 'text'});
+        
+        await pyshell.send(image_data);
 
-    app.get('/predict', function(req, res){
-
-        emotion();
+        await pyshell.on('message', message => {
+            console.log('prediction: %s', message);
+        });
+        console.log('on 지나침');
         console.log("실행?");
+        
+        pyshell.end(function (err,code,signal) {
+        if (err) console.log("err:"+err);
+          console.log('The exit code was: ' + code);
+          console.log('The exit signal was: ' + signal);
+          
+          console.log('finished');
+        });
+        */
+        
+        console.log("routes.index"+await emotion());
+
+
     });
     
 
@@ -294,5 +318,7 @@ module.exports = function(app, Room, RoomCheck, Food, Emotion)
 
    // 10개 리스트 생성
 }
+
+
 
 

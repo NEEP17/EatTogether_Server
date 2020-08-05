@@ -1,21 +1,24 @@
-module.exports.emotion = function(){
+module.exports.emotion = async function(){
 	const { PythonShell } = require("python-shell");
-	//let img_path = "C:\\neep\\picture2.jpg"
+    let image_data = "/home/ec2-user/app/what/What_Server/emotion/picture1.jpg";
 
-	//let image_data = ""; // 이미지 
+    let options = {
+        mode: 'text',
+        pythonPath: "/usr/bin/python3",
+        scriptPath: "/home/ec2-user/app/what/What_Server/emotion",
+        pythonOptions: ['-u'],
+        args: [image_data]
+    };
 
-	let image_data = "./aa.jpg"
-
-	let options = {
-	    mode: 'text',
-   	 pythonPath: "/usr/bin/python3",
-   	 scriptPath: "./emotion",
-   	 pythonOptions: ['-u'],
-   	 args: [image_data]
-	};
-
-	PythonShell.run('prediction.py', options, function(err, data) {
-    	if (err) throw err;
-   	 console.log('prediction: %s', data);
-});
+    const result = await new Promise((resolve, reject) => {
+        PythonShell.run('prediction.py', options, function(err, data) {
+            if (err) return reject(err);
+            console.log('prediction: %s', resolve(data));
+        });
+    });
+    
+    
+    console.log("result: "+result);
+    return result;
 }
+
