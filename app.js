@@ -1,4 +1,3 @@
-var mongoose = require('mongoose');
 var express     = require('express');
 const app         = express();
 var bodyParser  = require('body-parser');
@@ -22,14 +21,7 @@ var Food = require('./models/food');
 var RoomCheck = require('./models/roomcheck');
 //var router = require('./routes')(app, Room, RoomCheck, Food);
 
-// [ CONFIGURE mongoose ]
-// CONNECT TO MONGODB SERVER
-var db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function callback () {
-    console.log("mongo db connection OK.");
-});
-mongoose.connect('mongodb://neep:NeepWhat!@localhost:27017/neep?authSource=admin');
+
 
 // Swagger definition
 const swaggerDefinition = {
