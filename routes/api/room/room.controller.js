@@ -8,7 +8,7 @@ exports.room = async (req,res,next) => {
     var pred;
     var flag;
     
-    await model.Room.find().then((results) => {
+    await model.room.find().then((results) => {
         console.log("rooms"+results);
     });
 
