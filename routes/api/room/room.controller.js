@@ -10,7 +10,7 @@ exports.room = async (req,res,next) => {
     
     try{
         await model.Room.find({}).then((results) => {
-            if(results) console.log("rooms"+results);
+            if(results) console.log("rooms"+results[3].roomID);
         }).catch((err) => {
             console.log(err);
         });
