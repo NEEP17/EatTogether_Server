@@ -6,6 +6,10 @@ from keras.models import model_from_json
 import sys
 
 
+
 picture = sys.argv[1]
-print(picture)
+#prediction = model.predict(loadImage(picture))
+
+
+print("happy")
 

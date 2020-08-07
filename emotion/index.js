@@ -1,11 +1,11 @@
 module.exports.emotion = async function(){
 	const { PythonShell } = require("python-shell");
-    let image_data = "/home/ec2-user/app/what/What_Server/emotion/picture1.jpg";
+    let image_data = "/home/ec2-user/app/what/EatTogether_Server/emotion/picture1.jpg";
 
     let options = {
         mode: 'text',
         pythonPath: "/usr/bin/python3",
-        scriptPath: "/home/ec2-user/app/what/What_Server/emotion",
+        scriptPath: "/home/ec2-user/app/what/EatTogether_Server/emotion",
         pythonOptions: ['-u'],
         args: [image_data]
     };
