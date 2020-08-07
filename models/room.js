@@ -11,4 +11,3 @@ var roomSchema = new Schema({
 });
 
 module.exports = mongoose.model('room', roomSchema);
-

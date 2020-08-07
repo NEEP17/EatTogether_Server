@@ -18,9 +18,9 @@ var server = app.listen(port, function(){
 
 
 var Food = require('./models/food');
-var Room = require('./models/room');
+//var Room = require('./models/room');
 var RoomCheck = require('./models/roomcheck');
-var router = require('./routes')(app, Room, RoomCheck, Food);
+//var router = require('./routes')(app, Room, RoomCheck, Food);
 
 // [ CONFIGURE mongoose ]
 // CONNECT TO MONGODB SERVER
@@ -30,10 +30,6 @@ db.once('open', function callback () {
     console.log("mongo db connection OK.");
 });
 mongoose.connect('mongodb://neep:NeepWhat!@localhost:27017/neep?authSource=admin');
-
-// DEFINE MODEL
-//var Room = require('./model/room');
-//var router = require('./routes')(app, Room);
 
 // Swagger definition
 const swaggerDefinition = {
@@ -58,3 +54,6 @@ const options = {
 const swaggerSpec = swaggerJSDoc(options);
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// configure api router
+app.use('/api', require('./routes/api'));
