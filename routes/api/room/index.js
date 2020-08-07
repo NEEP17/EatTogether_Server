@@ -3,6 +3,6 @@ const controller = require('./room.controller');
 
 /* ROUTING METHOD */
 //방 목록
-router.get('/room',controller.room);
+router.get('/list',controller.room);
 
 module.exports = router;
