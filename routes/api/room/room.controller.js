@@ -20,28 +20,30 @@ exports.room = async (req,res,next) => {
 };
 
 
-// 방생성 및 방 아이디 중복체크
-exports.create = async (req,res,next) => {
+// 방 아이디 생성 및 중복체크
+exports.checkRoomID = async (req,res,next) => {
     var roomID;
     var totalCount; // 총 방 인원수
     
     try {
         totalCount = req.body.count;
+        console.log(req.body.count);
     } catch (err) {
         console.log(err);
     }
     
-    var tempRoomID = Math.floor(Math.random() * 1000000);
+    var tempRoomID = Math.floor(100000 + Math.random() * 900000);
     try{
         await model.RoomCheck.findOne({
             roomID: tempRoomID
         }).then((result) =>{
+            // 방 아이디 중복이면..
             if(result){
-                tempRoomID = Math.floor(Math.random() * 1000000);
+                tempRoomID = Math.floor(100000 + Math.random() * 900000);
                 console.log("방 아이디 중복");
+            // 방 아이디 중복 아니면..
             }else{
-
-                model.Room.create({
+                model.RoomCheck.create({
                     roomID: tempRoomID,
                     count: totalCount
                 }).then(async (result)=>{
@@ -53,41 +55,49 @@ exports.create = async (req,res,next) => {
                 })
             }
         });
-    }catch(err){
+    } catch(err){
         console.log(err);
     }
+
+}
+
+// 입장코드로 들어올 때.. deviceNum, roomID 저장
+exports.create = async (req,res,next) => {
+    var deviceNum = req.body.deviceNum;
+    var roomID = req.body.roomID;
     
+    // 방 아이디 생성되어 있으면..
+    try{
+        await model.RoomCheck.findOne({
+            roomID: roomID
+        }).then((result) =>{
+            // 방 아이디가 있으면..
+            if(result){
+                model.Room.create({
+                    roomID: roomID,
+                    deviceNum : deviceNum
+                }).then(async (result)=>{
+                     if (!result) {
+                        // client에게 실패 코드 넘겨주기
+                        res.status(400).send("입장 실패");
+                        console.log("입장 실패");
+                     } else {
+                         // client에게 성공 코드 넘겨주기
+                        res.status(201).send("입장 성공");
+                        console.log("입장 성공");
+                    }
+                })
+            }else{
+                // 방이 생성되어 있지 않음을 client에게 에러 전송
+                res.status(400).send("유효하지 않은 입장코드입니다.");
+            }
+        });
+    } catch(err){
+        console.log(err);
+    }    
     
 }
 
- app.post('/checkroomid', function (req,res) {
-       
-        // count 예외처리하기
-        // count 값 없을 때. 1~10명 까지만.
-        roomcheck.count = req.body.count;
 
-        var temp = Math.floor(Math.random() * 1000000);
-        await model.RoomCheck.find({roomID: temp}, function(err, roomchecks) {
-            if(err) return res.status(500).json({error: err});
-            // roomID 중복 안되면..
-            // roomID, count 저장
-            if(roomchecks.length === 0){
-                roomcheck.roomID = temp;
-                roomcheck.save(function(err) {
-                    if(err) {
-                        console.error(err);
-                        res.json({result:0});
-                        return;
-                    }
 
-                    res.json(roomcheck.roomID);
-                    console.log("count"+roomcheck.count);
-                });
-
-           }else{
-             console.log("이미 있는 방번호입니다.");
-           }
-
-        });
-
-    });
+// 이미지 받아서 저장..
