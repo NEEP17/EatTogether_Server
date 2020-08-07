@@ -15,6 +15,8 @@ mongoose.connect('mongodb://neep:NeepWhat!@localhost:27017/neep?authSource=admin
 
 db.mongoose = mongoose;
 db.Room = require('./room')(db.mongoose);
+db.RoomCheck = require('./roomcheck')(db.mongoose);
+db.Food = require('./food')(db.mongoose);
 
 module.exports = db;
 

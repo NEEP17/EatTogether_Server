@@ -1,10 +1,7 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
-
-var foodSchema = new Schema({
-    foodName: String,
-    image : String
-});
-
-module.exports = mongoose.model('food', foodSchema);
-
+module.exports = (mongoose) => {
+    return mongoose.model('food', 
+    mongoose.Schema({
+        foodName: String,
+        image : String
+    }));
+};
