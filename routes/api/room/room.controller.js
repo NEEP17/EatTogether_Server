@@ -10,7 +10,7 @@ exports.room = async (req,res,next) => {
     
     try{
         await model.Room.find({}).then((results) => {
-            if(results) console.log("rooms"+results);
+            if(results) console.log("rooms"+results[0].roomID);
         }).catch((err) => {
             console.log(err);
         });
@@ -36,17 +36,17 @@ exports.checkRoomID = async (req,res,next) => {
     try{
         await model.RoomCheck.findOne({
             roomID: tempRoomID
-        }).then((result) =>{
+        }).then(async (result) =>{
             // 방 아이디 중복이면..
             if(result){
                 tempRoomID = Math.floor(100000 + Math.random() * 900000);
                 console.log("방 아이디 중복");
             // 방 아이디 중복 아니면..
             }else{
-                model.RoomCheck.create({
+                await model.RoomCheck.create({
                     roomID: tempRoomID,
                     count: totalCount
-                }).then(async (result)=>{
+                }).then((result)=>{
                      if (!result) {
                         console.log("저장 실패");
                      } else {
@@ -62,34 +62,30 @@ exports.checkRoomID = async (req,res,next) => {
 }
 
 // 입장코드로 들어올 때.. deviceNum, roomID 저장
-exports.create = async (req,res,next) => {
-    var deviceNum = req.body.deviceNum;
-    var roomID = req.body.roomID;
+exports.create = async (deviceNum, roomID) => {
     
     // 방 아이디 생성되어 있으면..
     try{
         await model.RoomCheck.findOne({
             roomID: roomID
-        }).then((result) =>{
+        }).then(async (result) =>{
             // 방 아이디가 있으면..
             if(result){
-                model.Room.create({
+                await model.Room.create({
                     roomID: roomID,
                     deviceNum : deviceNum
-                }).then(async (result)=>{
+                }).then((result)=>{
                      if (!result) {
                         // client에게 실패 코드 넘겨주기
-                        res.status(400).send("입장 실패");
                         console.log("입장 실패");
                      } else {
                          // client에게 성공 코드 넘겨주기
-                        res.status(201).send("입장 성공");
                         console.log("입장 성공");
                     }
                 })
             }else{
                 // 방이 생성되어 있지 않음을 client에게 에러 전송
-                res.status(400).send("유효하지 않은 입장코드입니다.");
+                console.log("방이 생성되어 있지 않음");
             }
         });
     } catch(err){
