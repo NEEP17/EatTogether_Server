@@ -1,4 +1,4 @@
-const io = require('socket.io').listen(50000);
+const io = require('socket.io').listen(8000);
 const model = require('../../models');
 
 io.sockets.on('connection', socket => {

@@ -16,13 +16,6 @@ var server = app.listen(port, function(){
 });
 
 
-var Food = require('./models/food');
-//var Room = require('./models/room');
-var RoomCheck = require('./models/roomcheck');
-//var router = require('./routes')(app, Room, RoomCheck, Food);
-
-
-
 // Swagger definition
 const swaggerDefinition = {
   info: { // API informations (required)
@@ -39,7 +32,7 @@ const options = {
   // Import swaggerDefinitions
   swaggerDefinition,
   // Path to the API docs
-  apis: ['./routes/index.js']
+  apis: ['./routes/api/room/room.controller.js']
 }
 
 // Initialize swagger-jsdoc -> returns validated swagger spec in json format
@@ -48,4 +41,4 @@ const swaggerSpec = swaggerJSDoc(options);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // configure api router
-app.use('/api', require('./routes/api'));
+app.use('/api', require('./routes/api')); 
