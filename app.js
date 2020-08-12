@@ -32,7 +32,7 @@ const options = {
   // Import swaggerDefinitions
   swaggerDefinition,
   // Path to the API docs
-  apis: ['./routes/api/room/room.controller.js']
+  apis: ['./routes/api/swagger/swagger.yaml', './routes/api/room/room.controller.js']
 }
 
 // Initialize swagger-jsdoc -> returns validated swagger spec in json format

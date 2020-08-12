@@ -1,0 +1,66 @@
+/room/checkroomid:
+definitions:
+    roomchecks:
+      type: object
+      required:
+        - count
+      properties:
+        count:
+          type: Number
+          description: 인원수
+    room_response:
+      type: object
+      required:
+        - status
+        - roomID
+      properties:
+        status:
+          type: string
+          description: 입장코드 성공 여부- error, success
+        roomID:
+          type: string
+          description: 입장코드
+    room_Response_error:
+      type: object
+      required:
+        - status
+      properties:
+        message:
+          type: string
+          description: 오류 사유
+        status:
+          type: integer
+          description: response code
+
+paths:
+ /room/checkroomid:
+   post:
+     tags:
+     - [EatTogether]
+     summary: "create roomid process"
+     description: ""
+     consumes:
+     - "application/json"
+     produces:
+     - "application/json"
+     parameters:
+     - in: "body"
+       name: roomchecks
+       description: "roomID 중복 체크 후 입장코드 생성"
+       required: true
+       schema:
+         $ref: "#/definitions/roomchecks"
+     responses:
+       200:
+         description: "입장코드 생성 결과"
+         schema:
+           $ref: "#/definitions/room_response"
+       400:
+         description: "잘못된 데이터"
+         schema:
+           $ref: "#/definitions/room_Response_error"
+       500:
+         description: "입장코드 생성 오류 & 실패"
+         schema:
+           $ref: "#/definitions/room_Response_error"
+     
