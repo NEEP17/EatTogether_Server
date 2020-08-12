@@ -1,35 +1,32 @@
 const model = require('../../../models');
 
 exports.room = async (req,res,next) => {
-    var roomID;
-    var deviceNum;
-    var good;
-    var bad;
-    var pred;
-    var flag;
-    
-    limitrecords=10;
-
-    function getRandomArbitrary(min, max) {
-      return Math.ceil(Math.random() * (max - min) + min);
+    var food_list = [];
+    var tmp = 0;
+    while(true){
+        try{
+            await model.Food.count({}).then(async (count) => {
+                if(count) {
+                    var random = Math.floor(Math.random() * count)
+                    console.log(count);
+                    await model.Food.findOne({}).skip(random).then(async(result)=> {
+                        food_list.push(await result);
+                        tmp += 1;
+                        console.log(tmp);
+                    });
+                }
+            }).catch((err) => {
+                console.log(err);
+            });
+        } catch (Error) {
+            console.log(Error);
+        }
+        if(tmp===10){
+            break;
+        } 
     }
+    console.log(food_list);
     
-    try{
-        await model.Food.count({}).then(async (count) => {
-            if(count) {
-                console.log(count);
-                var skipRecords = await getRandomArbitrary(1, count-limitrecords);
-                query.skip(skipRecords); // Random Offset
-                query.exec((result) => {
-                   res.json(result);  // 10 random users 
-                });
-            }
-        }).catch((err) => {
-            console.log(err);
-        });
-    } catch (Error) {
-        console.log(Error);
-    }
 };
 
 
