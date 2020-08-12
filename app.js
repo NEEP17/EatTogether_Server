@@ -4,7 +4,8 @@ var bodyParser  = require('body-parser');
 
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
-
+const ranking = app.io.of('/ranking'
+)
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
