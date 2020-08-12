@@ -1,4 +1,6 @@
-const io = require('socket.io').listen(8000);
+const io = require('socket.io')(8000, {
+    path: '/ranking',
+};
 const model = require('../../models');
 
 io.sockets.on('connection', socket => {
@@ -8,11 +10,11 @@ io.sockets.on('connection', socket => {
         console.log("소켓 통신 connected");
     });
     
-    socket.on('createRoom', async(data) => {
+    socket.on('createRoom', async(roomID, deviceNum) => {
         // join room
         if(data.type === 'join') {
-            const roomID = data.roomID;
-            const deviceNum = data.deviceNum;
+            const roomID = roomID;
+            const deviceNum = deviceNum;
 
             console.log('join to room -*-*-> ' + room);
             
@@ -96,9 +98,8 @@ io.sockets.on('connection', socket => {
                             }// 모든 인원이 선호도 입력 완료 시 음식 리스트 넘겨주기
                              else{
                                  // cf 이용해서 리스트 생성
-                                 
-                                 
-                                socket.to(roomID).emit('finish', 음식 리스트);
+                                 var array1 = [{"name":"달걀볶음밥1", "image":"any url"},{"name":"달걀볶음밥2", "image":"any url"},{"name":"달걀볶음밥3"},{"name":"달걀볶음밥4"},{"name":"달걀볶음밥5"},{"name":"달걀볶음밥6"},{"name":"달걀볶음밥7"},{"name":"달걀볶음밥8"},{"name":"달걀볶음밥9"},{"name":"달걀볶음밥0"}]
+                                socket.to(roomID).emit('finishPref', array1);
                             }
                         }
                     })
@@ -136,3 +137,4 @@ io.sockets.on('connection', socket => {
     });
     */
 });
+
