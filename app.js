@@ -41,4 +41,4 @@ const swaggerSpec = swaggerJSDoc(options);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // configure api router
-app.use('/api', require('./routes/api')); 
+app.use('/', require('./routes/api')); 

@@ -51,6 +51,12 @@ exports.checkRoomID = async (req,res,next) => {
                         console.log("저장 실패");
                      } else {
                         console.log("저장 성공");
+                        res.json({
+                            "status": 200,
+                            "success" : true,
+                            "message": "입장코드 생성 success",
+                            "data" : {"roomID" : tempRoomID }
+                        });
                     }
                 })
             }
@@ -64,4 +70,5 @@ exports.checkRoomID = async (req,res,next) => {
 
 
 // 이미지 받아서 저장..
+
 
