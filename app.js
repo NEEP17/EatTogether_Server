@@ -5,15 +5,23 @@ var bodyParser  = require('body-parser');
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-
 var port = process.env.PORT || 8000;
-
 // [RUN SERVER]
 var server = app.listen(port, function(){
  console.log("Express server has started on port " + port)
 });
+
+// socket
+const socketModule = require('./routes/api/socket');
+app.io = require('socket.io')(server);
+app.io.attach(server);
+
+const ranking = app.io.of('/ranking');
+socketModule(ranking);
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
 
 
 // Swagger definition
