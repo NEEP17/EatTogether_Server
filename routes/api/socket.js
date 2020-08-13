@@ -1,4 +1,6 @@
 const model = require('../../models');
+const flag_success = 200;
+const flag_fail = 400;
 
 module.exports = ranking => { 
     ranking.on('connection', socket => {
@@ -29,33 +31,17 @@ module.exports = ranking => {
                              if (!result) {
                                 // client에게 실패 코드 넘겨주기
                                 console.log("입장 실패");
-                                //res.json({
-                                //    "status": 500,
-                                //    "success" : false,
-                                //    "message": "입장을 실패했습니다."
-                                //});
-                                 ranking.to(socket.id).emit("error",[1]);
+                                 ranking.to(socket.id).emit("error",flag_fail);
                              } else {
                                  // client에게 성공 코드 넘겨주기
                                 console.log("입장 성공");
-                                //res.json({
-                                //    "status": 200,
-                                //    "success" : true,
-                                //    "message": "입장 success",
-                                //    "data" : {"roomID" : tempRoomID }
-                                //});
-                                 ranking.to(socket.id).emit("suc", [0]);
+                                 ranking.to(socket.id).emit("suc", flag_success);
                             }
                         })
                     }else{
                         // 방이 생성되어 있지 않음을 client에게 에러 전송
                         console.log("방이 생성되어 있지 않음");
-                        //res.json({
-                        //    "status": 400,
-                        //    "success" : false,
-                        //    "message": "생성되지 않은 방입니다."
-                        //});
-                        ranking.to(socket.id).emit("error",[1]);
+                        ranking.to(socket.id).emit("error",flag_fail);
                     }
                 });
             } catch(err){
@@ -65,13 +51,15 @@ module.exports = ranking => {
         });
 
 
-        socket.on('preference', async(data) => {
-            var good = data.good;
-            var bad = data.bad;
-            var deviceNum = data.deviceNum;
-            var roomID = data.roomID;
+        socket.on('preference', async(good, bad, deviceNum, roomID) => {
+            var good = good;
+            var bad = bad;
+            var deviceNum = deviceNum;
+            var roomID = roomID;
             var count;
 
+            console.log("good: "+good+"bad: "+ "roomID: "+ roomID + "deviceNum: " +deviceNum);
+            
             // roomID에 해당하는 총 count 구하기
             await model.RoomCheck.findOne({
                 roomID: roomID
