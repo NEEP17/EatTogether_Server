@@ -31,17 +31,17 @@ module.exports = ranking => {
                              if (!result) {
                                 // client에게 실패 코드 넘겨주기
                                 console.log("입장 실패");
-                                 ranking.to(socket.id).emit("error",flag_fail);
+                                 ranking.to(socket.id).emit("result",flag_fail);
                              } else {
                                  // client에게 성공 코드 넘겨주기
                                 console.log("입장 성공");
-                                 ranking.to(socket.id).emit("suc", flag_success);
+                                 ranking.to(socket.id).emit("result", flag_success);
                             }
                         })
                     }else{
                         // 방이 생성되어 있지 않음을 client에게 에러 전송
                         console.log("방이 생성되어 있지 않음");
-                        ranking.to(socket.id).emit("error",flag_fail);
+                        ranking.to(socket.id).emit("result",flag_fail);
                     }
                 });
             } catch(err){
