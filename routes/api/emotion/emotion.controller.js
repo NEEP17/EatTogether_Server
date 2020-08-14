@@ -27,16 +27,22 @@ exports.predict = async (req,res,next) => {
 }
 
 exports.saveimage = async (req,res,next) => {
-        var a = req.body.img;
-        //var img = "/home/ec2-user/app/what/EatTogether_Server/routes/api/emotion/img/picture1.jpg";
+        var img = req.body.img;
+        var deviceNum = req.body.deviceNum;
+        var imgOrder = req.body.imgOrder;
     
-        // incode
-        //var bitmap = fs.readFileSync(img);
-        //var base64str = new Buffer.from(bitmap).toString('base64');
+        var rand = Math.floor(100 + Math.random() * 900);
+        console.log("rand"+rand);
+        
+        var rand_str = rand.toString();
+        console.log("rand_str"+rand_str)
         // decode
-        var buffer = new Buffer.from(a, 'base64');
-        console.log("dir: "+__dirname)
-        fs.writeFileSync('/home/ec2-user/app/what/EatTogether_Server/routes/api/emotion/img/e1.jpg', buffer, function(err){
+        var buffer = new Buffer.from(img, 'base64');
+        console.log("dir: "+__dirname);
+    
+        var filename = '/home/ec2-user/app/what/EatTogether_Server/routes/api/emotion/img/'+deviceNum+'+'+imgOrder + rand_str + '.jpg';
+        console.log(filename);
+        fs.writeFileSync(filename, buffer, function(err){
             console.log(err);
         });
 }
