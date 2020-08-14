@@ -31,11 +31,11 @@ module.exports = ranking => {
                              if (!result) {
                                 // client에게 실패 코드 넘겨주기
                                 console.log("입장 실패");
-                                 ranking.to(socket.id).emit("result",flag_fail);
+                                ranking.to(socket.id).emit("result",flag_fail);
                              } else {
                                  // client에게 성공 코드 넘겨주기
                                 console.log("입장 성공");
-                                 ranking.to(socket.id).emit("result", flag_success);
+                                ranking.to(socket.id).emit("result", flag_success);
                             }
                         })
                     }else{
@@ -83,11 +83,10 @@ module.exports = ranking => {
                             bad: bad
                         }).then(async (success)=>{
                              if (!success) {
-                                // client에게 실패 코드 넘겨주기
                                 console.log("선호도 저장 실패");
+                                 ranking.to(socket.id).emit("error");
                              } else {
-                                 // client에게 성공 코드 넘겨주기
-                                console.log("선호도 저장 성공");
+                                 console.log("선호도 저장 성공");
                                 // 인원 수 저장
                                 socket.adapter.rooms[roomID].userList.push(deviceNum);
 
@@ -96,7 +95,7 @@ module.exports = ranking => {
 
                                 // 현재 대기 인원 수 넘겨주기
                                 if(cntCurUsers != count){
-                                    ranking.to(roomID).emit('currentcount', cntCurUsers);
+                                    ranking.to(roomID).emit('currentCount', cntCurUsers);
                                 }// 모든 인원이 선호도 입력 완료 시 음식 리스트 넘겨주기
                                  else{
                                      // cf 이용해서 리스트 생성
@@ -119,6 +118,7 @@ module.exports = ranking => {
                                                 });
                                             } catch (Error) {
                                                 console.log(Error);
+                                                ranking.to(socket.id).emit("error");
                                             }
                                             if(tmp===10){
                                                 break;
@@ -132,14 +132,13 @@ module.exports = ranking => {
                     }else{
                         // 방이 생성되어 있지 않음을 client에게 에러 전송
                         console.log("방이 생성되어 있지 않음");
+                        ranking.to(socket.id).emit("error");
                     }
                 });
             } catch(err){
                 console.log(err);
             }    
-
                // 호불호 받기 update
-
         });
 
         /*
