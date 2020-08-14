@@ -1,31 +1,14 @@
 const model = require('../../../models');
 
 exports.room = async (req,res,next) => {
-    var food_list = [];
-    var tmp = 0;
-    while(true){
-        try{
-            await model.Food.count({}).then(async (count) => {
-                if(count) {
-                    var random = Math.floor(Math.random() * count)
-                    console.log(count);
-                    await model.Food.findOne({}).skip(random).then(async(result)=> {
-                        food_list.push(await result);
-                        tmp += 1;
-                        console.log(tmp);
-                    });
-                }
-            }).catch((err) => {
-                console.log(err);
-            });
-        } catch (Error) {
-            console.log(Error);
-        }
-        if(tmp===10){
-            break;
-        } 
-    }
-    console.log(food_list);
+    
+        await model.RoomCheck.findOne({
+            roomID: "835197"
+        }).then ( (result) => {
+            console.log(result);
+            count = result.count;
+        });
+        console.log(count);
     
 };
 
