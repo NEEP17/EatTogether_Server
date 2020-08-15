@@ -7,8 +7,8 @@ router.get('/predict',controller.predict);
 
 // 이미지 저장
 router.post('/saveimage',controller.saveimage);
-router.post('/avgpredict',controller.avgpredict);
 
+router.post('/avgpredict',controller.avgpredict);
 
 module.exports = router;
 

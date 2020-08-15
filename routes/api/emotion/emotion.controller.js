@@ -2,10 +2,9 @@ const model = require('../../../models');
 const fs = require('fs');
 
 
-
 exports.predict = async (req,res,next) => {
     const { PythonShell } = require("python-shell");
-    let image_data = "/home/ec2-user/app/what/EatTogether_Server/routes/api/emotion/img/picture1.jpg";
+    var image_data = image_data;
 
     let options = {
         mode: 'text',
@@ -21,8 +20,8 @@ exports.predict = async (req,res,next) => {
             //console.log('prediction: %s', resolve(data));
         });
     });
-    
-    
+
+
     console.log("result: "+result);
     return result;
     
@@ -55,27 +54,66 @@ exports.avgpredict = async (req,res) => {
     var imgOrder = req.body.imgOrder;
     var array1 = [];
     var str = deviceNum + '+'+imgOrder;
+    var pred_list = [];
     
     const path = require('path');
     const directoryPath = path.join(__dirname, 'img');    
 
-    const result = await new Promise((resolve, reject) => {
+    // predict function
+    var predict = async function (image_data){
+        const { PythonShell } = require("python-shell");
+        var image_data = image_data;
+
+        let options = {
+            mode: 'text',
+            pythonPath: "/usr/bin/python3",
+            scriptPath: "/home/ec2-user/app/what/EatTogether_Server/routes/api/emotion",
+            pythonOptions: ['-u'],
+            args: [image_data]
+        };
+
+        const result = await new Promise((resolve, reject) => {
+            PythonShell.run('prediction.py', options, function(err, data) {
+                if (err) return reject(err);
+                resolve(data);
+                console.log('prediction: '+ data);
+            });
+        });
+
+        console.log("result: "+result);
+        return result;
+    }
+    
+    // img list 가져오기
+    
+    const img_list = await new Promise((resolve, reject) => {
         fs.readdir(directoryPath, function (err, files) {
-            console.log(files);
             files.forEach(async (file) => {
                 if(file.indexOf(str)>=0){
-                    console.log(file);
                     await array1.push(file);
                     //console.log("in "+array1);
                 }
             });
-
-            console.log("in "+array1);
             return resolve(array1);
         });
     });
     
-    console.log("out "+result);
-    console.log(typeof result);
+    // for len(predict)
+    for(var i=0; i<img_list.length; i++){
+        var str_tmp = directoryPath +"/"+img_list[i];
+        img_list[i] = str_tmp;
+        console.log("img_list: "+img_list[i]);
+        console.log(await predict(img_list[i]));
+        //console.log(predict(img_list[i]));
+        //pred_list.push()
+    }
+    
+    
+    // img_list
+    
+    // avg -> db.save
+    
+
+    
 }
 
