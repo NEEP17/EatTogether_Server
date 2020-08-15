@@ -55,6 +55,7 @@ exports.avgpredict = async (req,res) => {
     var array1 = [];
     var str = deviceNum + '+'+imgOrder;
     var pred_list = [];
+    var sum = 0;
     
     const path = require('path');
     const directoryPath = path.join(__dirname, 'img');    
@@ -103,17 +104,21 @@ exports.avgpredict = async (req,res) => {
         var str_tmp = directoryPath +"/"+img_list[i];
         img_list[i] = str_tmp;
         console.log("img_list: "+img_list[i]);
-        console.log(await predict(img_list[i]));
         //console.log(predict(img_list[i]));
-        //pred_list.push()
+        //pred_list.push(await predict(img_list[i]));
+        sum += Number(await predict(img_list[i]));
     }
-    
-    
-    // img_list
-    
+        
     // avg -> db.save
+    var avg = sum/3;
     
-
+    //await model.Room.findOne({
+    //    deviceNum: deviceNum
+    //}).then(async (success)=>{
+    await model.Room.updateOne(
+        {"deviceNum" : deviceNum},
+        {"$push": {"pred": [avg]} } 
+    );
     
 }
 

@@ -4,6 +4,7 @@ from keras.preprocessing import image
 from keras.preprocessing.image import ImageDataGenerator
 from keras.models import model_from_json
 import sys
+from random import *
 
 #model = keras.models.load_model('/home/ec2-user/app/what/EatTogether_Server/emotion/model.h5')
 
@@ -18,9 +19,12 @@ import sys
 #picture = sys.argv[1]
 #prediction = model.predict(loadImage(picture))
 
-
-
-
 #emotion = "Happy!" if np.argmax(prediction) == 1 else "Neutral"
 
-print("happy")
+bad = uniform(1.0, 20.0)
+good = uniform(80.0, 100.0)
+ran = randint(1,5)
+if(ran==1):
+    print(bad)
+else:
+    print(good)
