@@ -159,6 +159,42 @@ module.exports = ranking => {
                // 호불호 받기 update
         });
 
+
+        socket.on('saveimage', async(img, deviceNum, imgOrder) => {
+            var img = img;
+            var deviceNum = deviceNum;
+            var imgOrder = imgOrder;
+
+            var rand = Math.floor(100 + Math.random() * 900);
+            console.log("rand"+rand);
+
+            var rand_str = rand.toString();
+            console.log("rand_str"+rand_str)
+            // decode
+            var buffer = new Buffer.from(img, 'base64');
+            console.log("dir: "+__dirname);
+
+            var filename = '/home/ec2-user/app/what/EatTogether_Server/routes/api/emotion/img/'+deviceNum+'+'+imgOrder+'+'+ rand_str + '.jpg';
+            console.log(filename);
+
+            fs.writeFileSync(filename, buffer, function(err){
+                console.log(err);
+                ranking.to(socket.id).emit("error");
+            });
+            
+        });
+        
+        // Cient가 3초마다 event 발생하면 감정 predict
+        socket.on('avgpredict', async(deviceNum, imgOrder) => {
+            var deviceNum = deviceNum;
+            var imgOrder = imgOrder;
+            
+            // deviceNum, imgOrder과 일치하는 사진 3개 find해서 list에 넣기.
+            // list for문 돌려서 각각 predict
+            
+           
+        });
+        
         /*
         socket.on('wait', data => {
             controller.writeMessage(data.good, data.bad);
