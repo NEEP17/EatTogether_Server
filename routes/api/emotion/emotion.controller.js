@@ -2,7 +2,8 @@ const model = require('../../../models');
 const fs = require('fs');
 
 
-exports.predict = async (req,res,next) => {
+// predict function
+var predict = async function (image_data){
     const { PythonShell } = require("python-shell");
     var image_data = image_data;
 
@@ -17,14 +18,13 @@ exports.predict = async (req,res,next) => {
     const result = await new Promise((resolve, reject) => {
         PythonShell.run('prediction.py', options, function(err, data) {
             if (err) return reject(err);
-            //console.log('prediction: %s', resolve(data));
+            resolve(data);
+            console.log('prediction: '+ data);
         });
     });
 
-
     console.log("result: "+result);
     return result;
-    
 }
 
 exports.saveimage = async (req,res,next) => {
@@ -60,30 +60,6 @@ exports.avgpredict = async (req,res) => {
     const path = require('path');
     const directoryPath = path.join(__dirname, 'img');    
 
-    // predict function
-    var predict = async function (image_data){
-        const { PythonShell } = require("python-shell");
-        var image_data = image_data;
-
-        let options = {
-            mode: 'text',
-            pythonPath: "/usr/bin/python3",
-            scriptPath: "/home/ec2-user/app/what/EatTogether_Server/routes/api/emotion",
-            pythonOptions: ['-u'],
-            args: [image_data]
-        };
-
-        const result = await new Promise((resolve, reject) => {
-            PythonShell.run('prediction.py', options, function(err, data) {
-                if (err) return reject(err);
-                resolve(data);
-                console.log('prediction: '+ data);
-            });
-        });
-
-        console.log("result: "+result);
-        return result;
-    }
     
     // img list 가져오기
     
@@ -92,7 +68,6 @@ exports.avgpredict = async (req,res) => {
             files.forEach(async (file) => {
                 if(file.indexOf(str)>=0){
                     await array1.push(file);
-                    //console.log("in "+array1);
                 }
             });
             return resolve(array1);
@@ -104,17 +79,11 @@ exports.avgpredict = async (req,res) => {
         var str_tmp = directoryPath +"/"+img_list[i];
         img_list[i] = str_tmp;
         console.log("img_list: "+img_list[i]);
-        //console.log(predict(img_list[i]));
-        //pred_list.push(await predict(img_list[i]));
         sum += Number(await predict(img_list[i]));
     }
         
     // avg -> db.save
     var avg = sum/3;
-    
-    //await model.Room.findOne({
-    //    deviceNum: deviceNum
-    //}).then(async (success)=>{
     await model.Room.updateOne(
         {"deviceNum" : deviceNum},
         {"$push": {"pred": [avg]} } 
