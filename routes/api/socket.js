@@ -160,7 +160,7 @@ module.exports = ranking => {
         });
 
 
-        socket.on('saveimage', async(img, deviceNum, imgOrder) => {
+        socket.on('saveImage', async(img, deviceNum, imgOrder) => {
             var img = img;
             var deviceNum = deviceNum;
             var imgOrder = imgOrder;
@@ -179,7 +179,9 @@ module.exports = ranking => {
 
             fs.writeFileSync(filename, buffer, function(err){
                 console.log(err);
-                ranking.to(socket.id).emit("error");
+                if(err){
+                    ranking.to(socket.id).emit("error");
+                }            
             });
             
         });
@@ -190,8 +192,9 @@ module.exports = ranking => {
             var imgOrder = imgOrder;
             
             // deviceNum, imgOrder과 일치하는 사진 3개 find해서 list에 넣기.
-            // list for문 돌려서 각각 predict
             
+            // list for문 돌려서 각각 predict하기
+            // avg three predictions -> db.save
            
         });
         
