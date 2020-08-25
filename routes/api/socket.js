@@ -234,43 +234,63 @@ module.exports = ranking => {
         // 지윤 위한 랭킹 소켓 간단히 완료        
         socket.on('showRank', async(roomID) => {            
             // 랭킹 알고리즘
-            // foodList 꺼내와서
-            // 1차 리스트 배열[0,1,2,3,4,...,9]
-            // 
-            
-            // 랭킹 리스트를 emit
             var roomID = roomID;
-            
-            var ranking_list = [];
-            var tmp = 0;
-            while(true){
-                try{
-                    await model.Food.count({}).then(async (count) => {
-                        if(count) {
-                            var random = Math.floor(Math.random() * count)
-                            console.log(count);
-                            await model.Food.findOne({}).skip(random).then(async(result)=> {
-                                ranking_list.push(await result);
-                                tmp += 1;
-                                console.log(tmp);
-                            });
-                        }
-                    }).catch((err) => {
-                        console.log(err);
-                    });
-                } catch (Error) {
-                    console.log(Error);
-                    ranking.to(socket.id).emit("error");
+            var foodList;
+            var pred;
+            var totalCount;
+            var flag;
+            var firstArray = [];
+            var secondArray = [];
+            var avg = Array.from(Array(10), () => Array(3).fill(0));
+            var rankingList = [];
+
+            // roomID에 해당하는 총 count 구하기
+            await model.RoomCheck.findOne({
+                roomID: roomID
+            }).then ((result) => {
+                foodList = result.foodList;
+                totalCount = result.count;
+            });
+
+            await model.Room.find({roomID: roomID}).cursor().eachAsync(async (doc) =>{
+                for(var i = 0; i < 10; i++){
+                    if(doc.pred[i] < 40){
+                        flag = 2;
+                    }else{
+                        flag = 1;
+                    }  
+
+                    avg[i][0] += (doc.pred[i] / totalCount);
+                    avg[i][1] = flag;
+                    avg[i][2] = i;
                 }
-                if(tmp===10){
-                    break;
-                } 
+
+            });
+
+            for(var i = 0; i < avg.length; i++){
+                ((avg[i][1]==1) ? firstArray.push(avg[i]) : secondArray.push(avg[i]));    
+            }
+
+            firstArray.sort(sortFunction);
+            secondArray.sort(sortFunction);
+
+            var array = firstArray.concat(secondArray);
+
+            function sortFunction(a, b) {
+                if (a[0] === b[0]) {
+                    return 0;
+                }
+                else {
+                    return (a[0] < b[0]) ? 1 : -1;
+                }
+            }
+
+            for(var i=0; i<10; i++){
+                rankingList.push(foodList[array[i][2]]);
             }
             
-            console.log("showRank:"+roomID);
-            
-            ranking.emit('finishRank', ranking_list);
-            console.log("ranking_list:"+ranking_list);
+            ranking.emit('finishRank', rankingList);
+            console.log("rankingList:"+rankingList);
         });
         
     });

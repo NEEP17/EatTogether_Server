@@ -10,68 +10,6 @@ exports.room = async (req,res,next) => {
         console.log(count);
 };
 
-exports.rank = async (req,res,next) => {
-    var roomID = req.body.roomID;
-    var foodList;
-    var pred;
-    var totalCount;
-    var flag;
-    var firstArray = [];
-    var secondArray = [];
-    var avg = Array.from(Array(10), () => Array(3).fill(0));
-    var rankingList = [];
-    
-    // roomID에 해당하는 총 count 구하기
-    await model.RoomCheck.findOne({
-        roomID: roomID
-    }).then ((result) => {
-        foodList = result.foodList;
-        totalCount = result.count;
-    });
-    
-    await model.Room.find({roomID: roomID}).cursor().eachAsync(async (doc) =>{
-        for(var i = 0; i < 10; i++){
-            if(doc.pred[i] < 40){
-                flag = 2;
-            }else{
-                flag = 1;
-            }  
-            
-            avg[i][0] += (doc.pred[i] / totalCount);
-            avg[i][1] = flag;
-            avg[i][2] = i;
-        }
-        
-    });
-    
-    for(var i = 0; i < avg.length; i++){
-        ((avg[i][1]==1) ? firstArray.push(avg[i]) :     secondArray.push(avg[i]));    
-    }
-    
-    firstArray.sort(sortFunction);
-    secondArray.sort(sortFunction);
-    
-    var array = firstArray.concat(secondArray);
-    
-    function sortFunction(a, b) {
-        if (a[0] === b[0]) {
-            return 0;
-        }
-        else {
-            return (a[0] < b[0]) ? 1 : -1;
-        }
-    }
-    
-    
-    for(var i=0; i<10; i++){
-        rankingList.push(JSON.stringify(foodList[array[i][2]]));
-    }
-    
-    console.log("firstArray: "+array);
-    console.log("rankingList: "+rankingList);
-
-};
-
 
 // 방 아이디 생성 및 중복체크
 exports.checkRoomID = async (req,res,next) => {
