@@ -5,8 +5,11 @@ const controller = require('./room.controller');
 // 방 목록
 router.get('/list',controller.room);
 
-
 // 방 아이디 생성 및 중복체크
 router.post('/checkroomid',controller.checkRoomID);
 
+// 랭킹
+router.post('/rank',controller.rank);
+
 module.exports = router;
+

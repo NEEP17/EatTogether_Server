@@ -116,7 +116,7 @@ module.exports = ranking => {
                         }// 모든 인원이 선호도 입력 완료 시 음식 리스트 넘겨주기
                          else{
                              // cf 이용해서 리스트 생성
-                             var food_list = [];
+                             var foodList = [];
                                 var tmp = 0;
                                 while(true){
                                     try{
@@ -125,7 +125,7 @@ module.exports = ranking => {
                                                 var random = Math.floor(Math.random() * count)
                                                 console.log(count);
                                                 await model.Food.findOne({}).skip(random).then(async(result)=> {
-                                                    food_list.push(await result);
+                                                    foodList.push(await result);
                                                     tmp += 1;
                                                     console.log(tmp);
                                                 });
@@ -141,8 +141,12 @@ module.exports = ranking => {
                                         break;
                                     } 
                                 }
-                                console.log(food_list);
-                            ranking.emit('finishPref', food_list);
+                                console.log(foodList);
+                                 await model.RoomCheck.updateOne(
+                                    {"roomID" : roomID},
+                                    {"$set": {"foodList": foodList }} 
+                                );                             
+                            ranking.emit('finishPref', foodList);
                         }
                     }
                 });                
@@ -230,8 +234,9 @@ module.exports = ranking => {
         // 지윤 위한 랭킹 소켓 간단히 완료        
         socket.on('showRank', async(roomID) => {            
             // 랭킹 알고리즘
-            
-            
+            // foodList 꺼내와서
+            // 1차 리스트 배열[0,1,2,3,4,...,9]
+            // 
             
             // 랭킹 리스트를 emit
             var roomID = roomID;
