@@ -1,7 +1,8 @@
 const model = require('../../models');
 const fs = require('fs');
 const emotionController = require('./emotion/emotion.controller');
-const rController = require('./recommend/recommend.controller');
+const recommendController = require('./recommend/recommend.controller');
+const rankingController = require('./ranking/ranking.controller');
 const flag_success = 200;
 const flag_fail = 400;
 
@@ -117,7 +118,7 @@ module.exports = ranking => {
                         }// 모든 인원이 선호도 입력 완료 시 음식 리스트 넘겨주기
                          else{
                             // cf 이용해서 리스트 생성
-                            var foodList = rController.recommend(roomID);                             
+                            var foodList = recommendController.recommend(roomID);                             
                             console.log(foodList);
                              
                             await model.RoomCheck.updateOne(
@@ -211,63 +212,7 @@ module.exports = ranking => {
         
         // 지윤 위한 랭킹 소켓 간단히 완료        
         socket.on('showRank', async(roomID) => {            
-            // 랭킹 알고리즘
-            var roomID = roomID;
-            var foodList;
-            var pred;
-            var totalCount;
-            var flag;
-            var firstArray = [];
-            var secondArray = [];
-            var avg = Array.from(Array(10), () => Array(3).fill(0));
-            var rankingList = [];
-
-            // roomID에 해당하는 총 count 구하기
-            await model.RoomCheck.findOne({
-                roomID: roomID
-            }).then ((result) => {
-                foodList = result.foodList;
-                totalCount = result.count;
-            });
-
-            await model.Room.find({roomID: roomID}).cursor().eachAsync(async (doc) =>{
-                for(var i = 0; i < 10; i++){
-                    if(doc.pred[i] < 40){
-                        flag = 2;
-                    }else{
-                        flag = 1;
-                    }  
-
-                    avg[i][0] += (doc.pred[i] / totalCount);
-                    avg[i][1] = flag;
-                    avg[i][2] = i;
-                }
-
-            });
-
-            for(var i = 0; i < avg.length; i++){
-                ((avg[i][1]==1) ? firstArray.push(avg[i]) : secondArray.push(avg[i]));    
-            }
-
-            firstArray.sort(sortFunction);
-            secondArray.sort(sortFunction);
-
-            var array = firstArray.concat(secondArray);
-
-            function sortFunction(a, b) {
-                if (a[0] === b[0]) {
-                    return 0;
-                }
-                else {
-                    return (a[0] < b[0]) ? 1 : -1;
-                }
-            }
-
-            for(var i=0; i<10; i++){
-                rankingList.push(foodList[array[i][2]]);
-            }
-            
-            ranking.emit('finishRank', rankingList);
+            ranking.emit('finishRank', rankingController.rankingList(roomID));
             console.log("rankingList:"+rankingList);
         });
         
