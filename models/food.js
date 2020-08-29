@@ -1,7 +1,7 @@
 module.exports = (mongoose) => {
     return mongoose.model('food', 
     mongoose.Schema({
-        foodName: String,
+        name: String,
         image : String
     }));
 };

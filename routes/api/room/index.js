@@ -8,5 +8,6 @@ router.get('/list',controller.room);
 // 방 아이디 생성 및 중복체크
 router.post('/checkroomid',controller.checkRoomID);
 
+router.post('/foodlist',controller.foodList);
 module.exports = router;
 
