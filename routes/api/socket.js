@@ -1,6 +1,7 @@
 const model = require('../../models');
 const fs = require('fs');
 const emotionController = require('./emotion/emotion.controller');
+const rController = require('./recommend/recommend.controller');
 const flag_success = 200;
 const flag_fail = 400;
 
@@ -115,37 +116,14 @@ module.exports = ranking => {
                             ranking.emit('currentCount', cntCurUsers,totalCount);
                         }// 모든 인원이 선호도 입력 완료 시 음식 리스트 넘겨주기
                          else{
-                             // cf 이용해서 리스트 생성
-                             var foodList = [];
-                                var tmp = 0;
-                                while(true){
-                                    try{
-                                        await model.Food.count({}).then(async (count) => {
-                                            if(count) {
-                                                var random = Math.floor(Math.random() * count)
-                                                console.log(count);
-                                                await model.Food.findOne({}).skip(random).then(async(result)=> {
-                                                    foodList.push(await result);
-                                                    tmp += 1;
-                                                    console.log(tmp);
-                                                });
-                                            }
-                                        }).catch((err) => {
-                                            console.log(err);
-                                        });
-                                    } catch (Error) {
-                                        console.log(Error);
-                                        ranking.to(socket.id).emit("error");
-                                    }
-                                    if(tmp===10){
-                                        break;
-                                    } 
-                                }
-                                console.log(foodList);
-                                 await model.RoomCheck.updateOne(
-                                    {"roomID" : roomID},
-                                    {"$set": {"foodList": foodList }} 
-                                );                             
+                            // cf 이용해서 리스트 생성
+                            var foodList = rController.recommend(roomID);                             
+                            console.log(foodList);
+                             
+                            await model.RoomCheck.updateOne(
+                                {"roomID" : roomID},
+                                {"$set": {"foodList": foodList }} 
+                            );                             
                             ranking.emit('finishPref', foodList);
                         }
                     }
