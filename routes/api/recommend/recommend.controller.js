@@ -23,6 +23,9 @@ module.exports.cbfRecommend= async function (food_name, n){
 }
 
 module.exports.recommend = async function(roomID){
+    const model = require('../../../models');
+    const rec = require('./recommend.controller')
+    
     // DB -> goods, bads list 뽑기
     var goodList = [];
     var badList = [];    
@@ -43,6 +46,8 @@ module.exports.recommend = async function(roomID){
     
     var foodList = difference.slice();
     
+    console.log("difference: "+difference)
+    console.log("foodList: "+foodList)
     // CBF 추천 알고리즘
     for(var i=0; i<difference.length; i++){
         var n = 0;
@@ -50,7 +55,7 @@ module.exports.recommend = async function(roomID){
         var flag = true;
         
         while(flag){
-            item = await rController.cbfRecommend(difference[i],n);
+            item = await rec.cbfRecommend(difference[i],n);
             if(foodList.includes(item[0])){
                 n++;
             }else{
@@ -87,7 +92,7 @@ module.exports.recommend = async function(roomID){
             }
             foodList.push(item);
         }
-        finalFoodList = foodList.slice();
+        //finalFoodList = foodList.slice();
     }else{
         // 추천 리스트 중 cbfNum 개수 만큼 random 뽑기
         var cbfNum = 10 - difference.length;
@@ -106,7 +111,7 @@ module.exports.recommend = async function(roomID){
         }
         foodList = difference.slice();
     }
-    console.log(foodList);
+    console.log("recommend:"+foodList);
     
     // DB에서 foodList name에 해당하는 documents list emit.
     

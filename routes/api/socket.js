@@ -118,7 +118,12 @@ module.exports = ranking => {
                         }// 모든 인원이 선호도 입력 완료 시 음식 리스트 넘겨주기
                          else{
                             // cf 이용해서 리스트 생성
-                            var foodList = recommendController.recommend(roomID);                             
+                            
+                            var foodList = await new Promise((resolve, reject) => {
+                                resolve(recommendController.recommend(roomID)); 
+                            });
+                            
+                            console.log("socket!!!")
                             console.log(foodList);
                              
                             await model.RoomCheck.updateOne(
@@ -211,9 +216,13 @@ module.exports = ranking => {
         });
         
         // 지윤 위한 랭킹 소켓 간단히 완료        
-        socket.on('showRank', async(roomID) => {            
-            ranking.emit('finishRank', rankingController.rankingList(roomID));
+        socket.on('showRank', async(roomID) => {
+            var rankingList = await new Promise((resolve, reject) => {
+                resolve(rankingController.rankingList(roomID)); 
+            });
+            
             console.log("rankingList:"+rankingList);
+            ranking.emit('finishRank', rankingList);
         });
         
     });
