@@ -1,13 +1,12 @@
 const model = require('../../../models');
 
 exports.room = async (req,res,next) => {
-        await model.RoomCheck.findOne({
-            roomID: "835197"
-        }).then ((result) => {
-            console.log(result);
-            count = result.count;
-        });
-        console.log(count);
+    await model.RoomCheck.findOne({
+        roomID: "972386"
+    }).then(async (result) =>{
+        console.log("foodListranking");
+        console.log(result);
+    });
 };
 
 

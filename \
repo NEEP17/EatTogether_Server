@@ -6,28 +6,19 @@ const rankingController = require('./ranking/ranking.controller');
 const flag_success = 200;
 const flag_fail = 400;
 
-module.exports = ranking => {
+module.exports = ranking => { 
     ranking.on('connection', socket => {
-        var whoisReady = [];
-        var whoisRank = 0;
-        var total;
-        var whoisWaiting = [];
+
         // connection 송신
+        //ranking.emit('connection', "소켓 통신 connected");
+
+        var whoisReady = [];
+        
         // roomID, deviceNum 저장만 함
-        // 방만들기 참여하기
         socket.on('createRoom', async(roomID, deviceNum) => {
             var roomID = roomID;
             var deviceNum = deviceNum;
-            // 현재 Room에 들어있는 인원수 세기
             
-            // roomID에 해당하는 총 count 구하기
-            await model.RoomCheck.findOne({
-                roomID: roomID
-            }).then ((result) => {
-                total = result.count;
-            });
-
-            console.log("totalCount: "+total);
             console.log(roomID + "deviceNum: " +deviceNum);
             
             try{
@@ -40,27 +31,21 @@ module.exports = ranking => {
                             deviceNum: deviceNum
                         }).then(async (isJoin) =>{ 
                             if(!isJoin){ // socket에 join이 안되어 있으면.. Room에 없으면..
-                                // count확인하고 들어가기
-                                if(total > await model.Room.countDocuments({})){
-                                    await model.Room.create({
-                                        roomID: roomID,
-                                        deviceNum : deviceNum
-                                    }).then((result)=>{ 
-                                        if (!result) { // create이 실패하면..
-                                            // client에게 실패 코드 넘겨주기
-                                            console.log("입장 실패");
-                                            ranking.to(socket.id).emit("result", flag_fail);
-                                         } else { // create이 성공하면..
-                                             // client에게 성공 코드 넘겨주기
-                                            console.log("입장 성공");
-                                            ranking.to(socket.id).emit("result", flag_success);
-                                            socket.join(roomID);
-                                        }
-                                    });
-                                }else{
-                                    console.log("방이 꽉찼습니다! 참여할 수 없습니다");
-                                    ranking.to(socket.id).emit("result", 401);
-                                }
+                                await model.Room.create({
+                                    roomID: roomID,
+                                    deviceNum : deviceNum
+                                }).then((result)=>{ 
+                                    if (!result) { // create이 실패하면..
+                                        // client에게 실패 코드 넘겨주기
+                                        console.log("입장 실패");
+                                        ranking.to(socket.id).emit("result",flag_fail);
+                                     } else { // create이 성공하면..
+                                         // client에게 성공 코드 넘겨주기
+                                        console.log("입장 성공");
+                                        ranking.to(socket.id).emit("result", flag_success);
+                                        socket.join(roomID);
+                                    }
+                                });
                             }else{ // socket에 join이 되어있으면..
                                 console.log("입장 성공");
                                 ranking.to(socket.id).emit("result", flag_success);
@@ -85,15 +70,28 @@ module.exports = ranking => {
             var bad = bad;
             var deviceNum = deviceNum;
             var roomID = roomID;
-            var totalCount = total;
+            var totalCount;
             
             console.log("good: "+good+" bad: "+bad+ " roomID: "+ roomID + " deviceNum: " +deviceNum);
+            
+            // roomID에 해당하는 총 count 구하기
+            await model.RoomCheck.findOne({
+                roomID: roomID
+            }).then ((result) => {
+                totalCount = result.count;
+            });
+            console.log("totalCount: "+totalCount);
 
+            //var manager = ranking.adapter ? { 
+            //    rooms : ranking.adapter.rooms,  
+            //    clients : ranking.adapter.sids  } : {  rooms : ranking.manager.roomClients, clients : ranking.manager.rooms };
+
+            
+            //var userList = [];
+            
             // 선호도 저장 및 인원 체크 후 client에게 넘겨주기
             try{
                 // deviceNum이 방에 들어와 있으면..
-                
-                // db에 값이 없으면..
                 
                 // 선호도 저장
                 await model.Room.updateOne(
@@ -107,17 +105,14 @@ module.exports = ranking => {
                          console.log("선호도 저장 성공");
                         // 인원 수 저장
                         //ranking.adapter.rooms[roomID].userList.push(deviceNum);
-                        whoisReady.push(deviceNum); // 배열에 같은 deviceNum이 들어가지 않도록 유지보수..
-                        whoisReady = whoisReady.filter( (item, idx, array) => {
-                           return array.indexOf( item ) === idx ;
-                        });
-                         console.log("whoisReady"+whoisReady);
+                         whoisReady.push(deviceNum); // 배열에 같은 deviceNum이 들어가지 않도록 유지보수..
+
                         // 현재 선호도 입력 한 인원수
                         //var cntCurUsers = ranking.adapter.rooms[roomID].userList.length();
                          var cntCurUsers = whoisReady.length;
                          console.log("cntCurUsers: "+cntCurUsers);
                         // 현재 대기 인원 수 넘겨주기
-                        if(cntCurUsers !== totalCount){
+                        if(cntCurUsers !== 1){
                             console.log("if 문 안으로 들어옴");
                             ranking.emit('currentCount', cntCurUsers,totalCount);
                         }// 모든 인원이 선호도 입력 완료 시 음식 리스트 넘겨주기
@@ -135,7 +130,7 @@ module.exports = ranking => {
                                 {"roomID" : roomID},
                                 {"$set": {"foodList": foodList }} 
                             );                             
-                            ranking.emit('finishPref', foodList, totalCount);
+                            ranking.emit('finishPref', foodList);
                         }
                     }
                 });                
@@ -174,17 +169,13 @@ module.exports = ranking => {
 
         
         // 3초마다 predict값 평균 낸 값 받아서 db에 저장하기
-        socket.on('savePredict', async(avg_predict, deviceNum, imgOrder) => {
+        socket.on('savePredict', async(avg_predict, deviceNum) => {
             console.log("savePredict: "+avg_predict);
             console.log("DeviceNum: "+deviceNum);
             await model.Room.updateOne(
                 {"deviceNum" : deviceNum},
-                {"$push": {"pred": [avg_predict*100]}} 
+                {"$push": {"pred": [avg_predict]}} 
             );
-            
-            if(imgOrder==9){
-                ranking.emit('finishPred')
-            }
         });
         
         // Cient가 3초마다 event 발생하면 감정 predict
@@ -240,23 +231,8 @@ module.exports = ranking => {
                 resolve(rankingController.rankingList(roomID)); 
             });
             
-            ranking.emit('finishRank', 1);
             console.log("rankingList:"+rankingList);
-            ranking.emit('rankingList', rankingList);
-            
-            whoisRank++;
-            
-            if(whoisRank==total){
-                await model.RoomCheck.deleteOne({
-                    roomID: roomID,
-                });
-                // 오류나면 deviceNum 받아서 deleteOne으로 삭제하기
-                await model.Room.deleteMany({
-                    roomID: roomID,
-                });
-            }
-            
-            socket.leave()
+            ranking.emit('finishRank', rankingList);
         });
         
     });

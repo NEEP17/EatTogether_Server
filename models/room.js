@@ -5,7 +5,8 @@ module.exports = (mongoose) => {
         deviceNum : String, 
         good:String, 
         bad:String,
-        pred: [Number],
+        pred: [parseFloat(Number)],
         flag: Boolean
     }));
 };
+

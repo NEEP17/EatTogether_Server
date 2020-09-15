@@ -14,12 +14,16 @@ module.exports.rankingList = async (roomID) => {
     // roomID에 해당하는 총 count 구하기
     await model.RoomCheck.findOne({
         roomID: roomID
-    }).then ((result) => {
+    }).then (async (result) => {
         foodList = result.foodList;
         totalCount = result.count;
     });
-
+    
+    console.log("foodListranking");
+    console.log(foodList);
+    
     await model.Room.find({roomID: roomID}).cursor().eachAsync(async (doc) =>{
+        console.log("doc"+doc);
         for(var i = 0; i < 10; i++){
             if(doc.pred[i] < 40){
                 flag = 2;
@@ -30,17 +34,21 @@ module.exports.rankingList = async (roomID) => {
             avg[i][0] += (doc.pred[i] / totalCount);
             avg[i][1] = flag;
             avg[i][2] = i;
+            console.log("avg[i][0]"+avg[i][0])
         }
 
     });
-
+    
     for(var i = 0; i < avg.length; i++){
         ((avg[i][1]==1) ? firstArray.push(avg[i]) : secondArray.push(avg[i]));    
     }
 
     firstArray.sort(sortFunction);
     secondArray.sort(sortFunction);
-
+    
+    console.log("firstArray:"+firstArray);
+    console.log("secondArray"+secondArray);
+    
     var array = firstArray.concat(secondArray);
 
     function sortFunction(a, b) {
@@ -55,6 +63,8 @@ module.exports.rankingList = async (roomID) => {
     for(var i=0; i<10; i++){
         rankingList.push(foodList[array[i][2]]);
     }
+    
+    console.log("ranking"+rankingList);
     return rankingList;
 
 };

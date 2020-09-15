@@ -83,7 +83,7 @@ module.exports.recommend = async function(roomID){
                         await model.Food.findOne({}).skip(random).then(async(doc)=> {
                             item = doc.name;
                             console.log("name: "+item);
-                            if(!foodList.includes(item)){
+                            if(!foodList.includes(item) && !badList.includes(item)){
                                 flag = false;
                             }
                         });
