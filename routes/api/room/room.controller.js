@@ -1,12 +1,15 @@
 const model = require('../../../models');
 
 exports.room = async (req,res,next) => {
-    await model.RoomCheck.findOne({
-        roomID: "972386"
-    }).then(async (result) =>{
-        console.log("foodListranking");
-        console.log(result);
-    });
+    console.log("IMAGE1");
+    var img = req.file;
+    var deviceNum = req.body.deviceNum;
+    var imgOrder = req.body.imgOrder;
+    console.log(deviceNum + imgOrder);
+    
+    
+    console.log("IMAGE2");
+    console.log(img);
 };
 
 
