@@ -1,4 +1,5 @@
 const model = require('../../../models');
+const fs = require('fs');
 
 exports.room = async (req,res,next) => {
     console.log("IMAGE1");
@@ -6,12 +7,29 @@ exports.room = async (req,res,next) => {
     var deviceNum = req.body.deviceNum;
     var imgOrder = req.body.imgOrder;
     console.log(deviceNum + imgOrder);
-    
-    
     console.log("IMAGE2");
     console.log(img);
+    res.json({
+	"status" : 200,
+	"success": true,
+	"message": "이미지 저장 완료"
+    });
 };
 
+exports.test = async (req,res,next) => {
+    var deviceNum = req.body.deviceNum;
+    // delete file
+    var directoryPath = '/home/ec2-user/app/what/EatTogether_Server/routes/api/emotion/img';
+    console.log("test");
+    
+    fs.access(directoryPath, fs.constants.F_OK, (err) => { // A
+      if (err) return console.log('삭제할 수 없는 파일입니다');
+
+      fs.unlink(directoryPath, (err) => err ?  
+        console.log(err) : console.log(`${filePath} 를 정상적으로 삭제했습니다`));
+    });
+    
+}
 
 // 방 아이디 생성 및 중복체크
 exports.checkRoomID = async (req,res,next) => {

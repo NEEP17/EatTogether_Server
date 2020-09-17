@@ -14,7 +14,7 @@ module.exports.rankingList = async (roomID) => {
     // roomID에 해당하는 총 count 구하기
     await model.RoomCheck.findOne({
         roomID: roomID
-    }).then (async (result) => {
+    }).then ((result) => {
         foodList = result.foodList;
         totalCount = result.count;
     });
@@ -64,7 +64,9 @@ module.exports.rankingList = async (roomID) => {
         rankingList.push(foodList[array[i][2]]);
     }
     
-    console.log("ranking"+rankingList);
+    console.log(rankingList[0]);
+    console.log(rankingList[1]);
+    console.log(rankingList[2]);
     return rankingList;
 
 };
