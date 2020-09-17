@@ -198,26 +198,18 @@ module.exports = ranking => {
             var deviceNum= deviceNum;
             var imgOrder = imgOrder;
             var array1 = [];
-            var str = deviceNum + '_' + imgOrder;
+            var str = roomID + '_' + deviceNum + '_' + imgOrder;
             var pred_list = [];
             var sum = 0;
             
-            var directoryPath = path.join(__dirname, 'emotion/img'); 
-            var roomPath = path.join(directoryPath, roomID);
-            
-            fs.mkdir(roomPath, (err) => { 
-                if (err) { 
-                    return console.error(err); 
-                } 
-                console.log('Directory created successfully!'); 
-            });
+            var directoryPath = path.join(__dirname, 'emotion/img');
               
-            console.log("img_list: "+roomPath);
+            console.log("img_list: "+directoryPath);
 
 
             // img list 가져오기
             var img_list = await new Promise((resolve, reject) => {
-                fs.readdir(roomPath, function (err, files) {
+                fs.readdir(directoryPath, function (err, files) {
                     files.forEach(async (file) => {
                         if(file.indexOf(str)>=0){
                             await array1.push(file);
@@ -229,7 +221,7 @@ module.exports = ranking => {
 
             // for len(predict)
             for(var i=0; i<img_list.length; i++){
-                var str_tmp = roomPath +"/"+img_list[i];
+                var str_tmp = directoryPath +"/"+img_list[i];
                 img_list[i] = str_tmp;
                 console.log("img_list: "+img_list[i]);
                 sum += Number(await emotionController.predict(img_list[i]));
@@ -259,7 +251,7 @@ module.exports = ranking => {
                 resolve(rankingController.rankingList(roomID)); 
             });
             console.log("rankingList:"+rankingList);
-            ranking.to(roomID).emit('rankingList', rankingList);
+            ranking.emit('rankingList', rankingList);
             
             if(!whoisRank[roomID]){
                 whoisRank[roomID] = 0;

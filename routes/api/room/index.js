@@ -1,12 +1,11 @@
 const router = require('express').Router();
 const controller = require('./room.controller');
 var multer  = require('multer');
+var roomID;
 //var upload = multer({ dest: '/home/ec2-user/app/what/EatTogether_Server/routes/api/emotion/img' });
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    var { roomID } = req.body;
-    console.log("roomID"+roomID);
-    var dir = `/home/ec2-user/app/what/EatTogether_Server/routes/api/emotion/img/${roomID}`
+    var dir = '/home/ec2-user/app/what/EatTogether_Server/routes/api/emotion/img/';
     cb(null, dir)
   },
   filename: function (req, file, cb) {

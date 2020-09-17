@@ -20,8 +20,8 @@ app.io.attach(server);
 const ranking = app.io.of('/ranking');
 socketModule(ranking);
 
-app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
-app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '2000mb', extended: true}));
+app.use(bodyParser.json({limit: '2000mb'}));
 
 
 

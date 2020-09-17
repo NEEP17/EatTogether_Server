@@ -1,5 +1,6 @@
 const model = require('../../../models');
 const fs = require('fs');
+var multer  = require('multer');
 
 exports.room = async (req,res,next) => {
     console.log("IMAGE1");
